@@ -38,46 +38,20 @@ import spacemadness.com.lunarconsole.utils.UIUtils;
 import static spacemadness.com.lunarconsole.debug.Tags.PLUGIN;
 
 public class ManagedPlatform implements Platform {
-    private final WeakReference<UnityPlayer> playerRef;
     private final UnityScriptMessenger scriptMessenger;
-
+    private final View unityView;
     public ManagedPlatform(Activity activity, String target, String method) {
-        UnityPlayer player = resolveUnityPlayerInstance(activity);
-        if (player == null) {
-            throw new LunarConsoleException("Can't initialize plugin: UnityPlayer instance not resolved");
+        try {
+            unityView = ((ViewGroup) activity.getWindow().getDecorView().findViewById(android.R.id.content)).getChildAt(0);
+        }
+        catch (Exception e) {
+            throw new LunarConsoleException("Can't initialize plugin: can't fetch UnityView from activity");
         }
 
-        playerRef = new WeakReference<>(player);
         scriptMessenger = new UnityScriptMessenger(target, method);
     }
 
     //region Helpers
-
-    private static UnityPlayer resolveUnityPlayerInstance(Activity activity) {
-        return resolveUnityPlayerInstance(UIUtils.getRootViewGroup(activity));
-    }
-
-    private static UnityPlayer resolveUnityPlayerInstance(ViewGroup root) {
-        if (root instanceof UnityPlayer) {
-            return (UnityPlayer) root;
-        }
-
-        for (int i = 0; i < root.getChildCount(); ++i) {
-            View child = root.getChildAt(i);
-            if (child instanceof UnityPlayer) {
-                return (UnityPlayer) child;
-            }
-
-            if (child instanceof ViewGroup) {
-                UnityPlayer player = resolveUnityPlayerInstance((ViewGroup) child);
-                if (player != null) {
-                    return player;
-                }
-            }
-        }
-
-        return null;
-    }
 
     //endregion
 
@@ -85,7 +59,7 @@ public class ManagedPlatform implements Platform {
 
     @Override
     public View getTouchRecipientView() {
-        return getPlayer();
+        return unityView;
     }
 
     @Override
@@ -100,10 +74,6 @@ public class ManagedPlatform implements Platform {
     //endregion
 
     //region Getters/Setters
-
-    private UnityPlayer getPlayer() {
-        return playerRef.get();
-    }
 
     //endregion
 }

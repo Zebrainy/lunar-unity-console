@@ -52,7 +52,7 @@ repositories {
 
 static def getUnityDependencyJar() {
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        return 'C:/Program Files/Unity-Export/Editor/Data/PlaybackEngines/AndroidPlayer/Variations/mono/Release/Classes/classes.jar'
+        return 'E:/Program Files/Unity/2023.1.3f1/Editor/Data/PlaybackEngines/AndroidPlayer/Variations/mono/Release/Classes/classes.jar'
     }
 
     return '/Applications/Unity-Export/PlaybackEngines/AndroidPlayer/Variations/mono/Release/Classes/classes.jar'
